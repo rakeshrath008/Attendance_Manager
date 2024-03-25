@@ -8,6 +8,7 @@ export default function Attendance() {
   const [submissionStatus, setSubmissionStatus] = useState('');
   const userID = Cookies.get('userId');
   const username = Cookies.get('username');
+  const token = Cookies.get('token');
   useEffect(() => {
     const options = {
       hour12: true,
@@ -18,7 +19,6 @@ export default function Attendance() {
 
     async function fetchData() {
       try {
-        const token = Cookies.get('token');
         const response = await fetch(`http://localhost:5000/time/${userID}/lastData`,{
           method: 'GET',
           headers: {
@@ -28,7 +28,6 @@ export default function Attendance() {
         });
         if (response.ok) {
           const responseData = await response.json();
-          console.log(">>>>>>>>>>>>",responseData);
           if (responseData.type === 'entry') {
             setSubmissionType('exit');
             const entryTime = new Date(responseData.time);
@@ -50,7 +49,7 @@ export default function Attendance() {
     }
 
     fetchData();
-  }, [userID]);
+  }, [userID,token]);
 
   const handleSubmission = async () => {
     try {
@@ -84,8 +83,6 @@ export default function Attendance() {
   };
 
   const displaySubmissionStatus = (data, eventType) => {
-    console.log('Received data:', data);
-
     if (!data || !data[`${eventType.toLowerCase()}Time`]) {
       console.error(`Invalid data received for ${eventType} submission.`);
       return;
@@ -107,10 +104,36 @@ export default function Attendance() {
       setSubmissionStatus(`${eventType} submitted successfully at ${eventTimeIST}`);
     }
   };
-  const selectedDay = (val) => {
-    console.log(val);
-  };const startDate = new Date("2024-01-01");
+  const selectedDay = () => {
+    // console.log(new Date().getDate())
+    return new Date();
+  };
+  const startDate = new Date("2024-01-01");
 
+  useEffect(() => {
+    async function fetchAllData() {
+      try {
+        const response = await fetch(`http://localhost:5000/time/${userID}/dailyTime`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
+        const data = await response.json();
+        console.log(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+    if (userID) {
+      fetchAllData();
+    }
+  }, [userID, token]);
+  
   return (
     <div>
       <div className='flex flex-col items-center text-center justify-center md:mt-[-540px] md:ml-[250px] font-serif'>
@@ -125,13 +148,11 @@ export default function Attendance() {
       </div><br />
       <div className="ml-[300px] mr-[80px] mt- outline outline-offset-2 outline-1 p-2 outline-blue-500">
         <DatePicker
-          getSelectedDay={selectedDay}
+          selectDate={selectedDay}
           startDate={startDate}
           endDate={365}
           labelFormat={"MMMM"}
           color={"#374e8c"}
-          min={new Date("2024-01-01")}
-          max={new Date("2024-12-31")}
         />
       </div>
     </div>

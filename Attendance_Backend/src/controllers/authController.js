@@ -10,7 +10,6 @@ const registerUser = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({ message: 'User with the same email, empId, or username already exists' });
     }
-
     const hashedPassword = await hashPassword(password);
     const user = new User({ email, empId, username, password: hashedPassword, role, status: 'Active' });
     const doc = await user.save();

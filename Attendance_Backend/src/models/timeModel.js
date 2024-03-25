@@ -7,4 +7,27 @@ const timeSchema = new mongoose.Schema({
   exitTime: { type: Date },
 });
 
-module.exports = mongoose.model('Time', timeSchema);
+const dailyTimeSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  date: {
+    type: Date,
+    required: true
+  },
+  entryTime: {
+    type: Date,
+    required: true
+  },
+  exitTime: {
+    type: Date,
+    required: true
+  }
+});
+
+const Time = mongoose.model('Time', timeSchema);
+const DailyTime = mongoose.model('DailyTime', dailyTimeSchema);
+
+module.exports = { Time, DailyTime };

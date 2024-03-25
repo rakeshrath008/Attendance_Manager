@@ -15,6 +15,7 @@ const Manage_Users = () => {
   const [validationErrors, setValidationErrors] = useState({});
   const navigate = useNavigate();
   const [userData, setData] = useState([]);
+  const [message, setMessage] = useState('');
 
   const fetchData = async () => {
     try {
@@ -57,13 +58,12 @@ const Manage_Users = () => {
         body: JSON.stringify(form),
         headers: { 'Content-Type': 'application/json' },
       });
-
+      const data = await response.json();
       if (!response.ok) {
+        setMessage(data.message);
         throw new Error('Failed to submit form');
       }
 
-      const data = await response.json();
-      console.log(data.message);
       setForm({});
       setSubmitted(true);
     } catch (error) {
@@ -201,6 +201,7 @@ const Manage_Users = () => {
                 <div><br />
                   <button type="submit" className='outline outline-offset-3 outline-1 text-red-600 font-bold bg-green-500 hover:bg-blue-600 hover:text-white hover:outline-offset-3 px-4 py-1 rounded-md'>Submit</button>
                 </div>
+                {message && <p className="text-red-500">{message}</p>}
               </form>
             )}
           </div>

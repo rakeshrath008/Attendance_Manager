@@ -106,7 +106,7 @@ const Holidays = () => {
           </button>
         </div>
       )}
-      <div className="mt-[-340px] ml-[1250px] font-serif text-center w-[350px] ">
+      <div className="mt-[-370px] ml-[1250px] font-serif text-center w-[350px] ">
   <h1 className="underline font-bold mb-4">Holiday List</h1>
   <div className="overflow-x-hidden overflow-scroll h-96">
     <table className="table-auto border-collapse border border-gray-300 ">
